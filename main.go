@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/kkwon1/webauthn-playground-service/db"
 	"github.com/kkwon1/webauthn-playground-service/model"
@@ -15,6 +16,18 @@ func main() {
 	fmt.Print("Hello World!")
 
 	router := gin.Default()
+	corsConfig := cors.DefaultConfig()
+
+	corsConfig.AllowOrigins = []string{"*"}
+	// To be able to send tokens to the server.
+	corsConfig.AllowCredentials = true
+
+	// OPTIONS method for ReactJS
+	corsConfig.AddAllowMethods("OPTIONS", "GET", "POST", "PUT")
+
+	// Register the middleware
+	router.Use(cors.New(corsConfig))
+
 	router.GET("/test", test)
 	router.POST("/register", registerUser)
 
@@ -64,8 +77,8 @@ func registerUser(c *gin.Context) {
 
 func createPublicKeyCredentialCreationOption(id string, username string) model.PublicKeyCredentialCreationOptions {
 	rp := model.RelyingPartyEntity {
-		Name: "Kevin Test",
-		ID: "123",
+		Name: "localhost",
+		ID: "localhost",
 	}
 
 	userEntity := model.UserEntity {
@@ -78,7 +91,55 @@ func createPublicKeyCredentialCreationOption(id string, username string) model.P
 		Challenge: protocol.CreateChallenge(),
 		RelyingParty: rp,
 		User: userEntity,
+		Parameters: defaultRegistrationCredentialParameters(),
 	}
 
 	return options;
+}
+
+
+
+func defaultRegistrationCredentialParameters() []protocol.CredentialParameter {
+	return []protocol.CredentialParameter{
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgES256,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgES384,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgES512,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgRS256,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgRS384,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgRS512,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgPS256,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgPS384,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgPS512,
+		},
+		{
+			Type:      protocol.PublicKeyCredentialType,
+			Algorithm: protocol.AlgEdDSA,
+		},
+	}
 }

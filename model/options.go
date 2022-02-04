@@ -8,4 +8,5 @@ type PublicKeyCredentialCreationOptions struct {
 	Challenge              protocol.Challenge       `json:"challenge"`
 	RelyingParty           RelyingPartyEntity       `json:"rp"`
 	User                   UserEntity               `json:"user"`
+	Parameters             []protocol.CredentialParameter    `json:"pubKeyCredParams,omitempty"`
 }
