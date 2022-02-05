@@ -1,9 +1,6 @@
 package protocol
 
-// COSEAlgorithmIdentifier From §5.10.5. A number identifying a cryptographic algorithm. The algorithm
-// identifiers SHOULD be values registered in the IANA COSE Algorithms registry
-// [https://www.w3.org/TR/webauthn/#biblio-iana-cose-algs-reg], for instance, -7 for "ES256"
-//  and -257 for "RS256".
+// COSEAlgorithmIdentifier https://www.iana.org/assignments/cose/cose.xhtml#algorithms
 type COSEAlgorithmIdentifier int
 
 // This enumeration defines the valid credential types.
