@@ -6,9 +6,11 @@ import (
 	"github.com/kkwon1/webauthn-playground-service/controller"
 )
 
+// TODO: implement dependency injection
+
 func main() {
 	router := setupRouter()
-
+	setupEndpoints(router)
 	router.Run("localhost:8080")
 }
 

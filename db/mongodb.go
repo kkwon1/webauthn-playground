@@ -12,8 +12,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type MongoDb struct {
+	Client *mongo.Client
+}
 
-func Connect() {
+type UserDO struct {
+	UserID string
+	Username string
+	PublicKeyCredentialCreationOptions model.PublicKeyCredentialCreationOptions
+}
+
+func Connect() MongoDb {
 	// TODO: Configure this elsewhere
 	mongodb_uri := "mongodb://localhost:27017"
 
@@ -24,28 +33,37 @@ func Connect() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	err = client.Connect(ctx)
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Print("I have connected with the DB!")
-	if err != nil {
-			log.Fatal(err)
+	return MongoDb {
+		Client: client,
 	}
-	defer client.Disconnect(ctx)
-	
-		/*
-					List databases
-	*/
-	databases, err := client.ListDatabaseNames(ctx, bson.M{})
-	if err != nil {
-			log.Fatal(err)
-	}
-	fmt.Println(databases)
-
 }
 
-func FindUser(username string) bool {
-	log.Print("did not find: " + username)
-	return false;
+func FindUser(mongoDb MongoDb, username string) bool {
+	users_collection := mongoDb.Client.Database("authdb").Collection("Users")
+
+	var foundUser UserDO
+	err := users_collection.FindOne(context.Background(), bson.M{"username": username}).Decode(&foundUser)
+	if (err != nil) {
+		fmt.Println(err)
+		return false
+	}
+	return true
 }
 
-func SaveUser(user model.UserEntity) {
-	log.Print("Saving user")
+func SaveUser(mongoDb MongoDb, userDO UserDO) error {
+	users_collection := mongoDb.Client.Database("authdb").Collection("Users")
+
+	insertResult, err := users_collection.InsertOne(context.Background(), userDO)
+	if (err != nil) {
+		fmt.Println(err)
+		return err
+	}
+
+	fmt.Println(insertResult)
+	return nil
 }

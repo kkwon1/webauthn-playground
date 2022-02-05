@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/kkwon1/webauthn-playground-service/model"
 	"github.com/kkwon1/webauthn-playground-service/protocol"
-	"github.com/segmentio/ksuid"
 )
 
 func CreatePublicKeyCredentialCreationOption(id string, username string) model.PublicKeyCredentialCreationOptions {
@@ -13,9 +12,9 @@ func CreatePublicKeyCredentialCreationOption(id string, username string) model.P
 	}
 
 	userEntity := model.UserEntity{
-		Name:        "Kevin",
-		DisplayName: "Kevin",
-		ID:          ksuid.New().String(),
+		Name:        username,
+		DisplayName: username,
+		ID:          id,
 	}
 
 	options := model.PublicKeyCredentialCreationOptions{
